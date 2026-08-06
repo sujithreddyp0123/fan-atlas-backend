@@ -1,0 +1,145 @@
+# FanAtlas AI Layer Compatibility Contract
+
+This document defines the boundary between the FanAtlas universal backend and Antonio's AI layers.
+
+The backend can run without AI services using seeded/mock outputs. When Antonio's services are ready, the backend should call them through these contracts.
+
+## Ownership Boundary
+
+| Area | Owner |
+| --- | --- |
+| Commentary intelligence, prompt strategy, multilingual generation, voice generation | Antonio AI layer |
+| Prediction model, probabilities, insights, model evaluation | Antonio AI layer |
+| Authenticated user APIs, match data, storage, replay, delivery to mobile/web | FanAtlas backend |
+| Caching, history, rewind, Match Center aggregation, WebSocket delivery | FanAtlas backend |
+
+## Commentary Generation Request
+
+Backend sends one validated match event at a time.
+
+```json
+{
+  "request_id": "req-123",
+  "match_id": "match-aur-har",
+  "event_id": "evt-3",
+  "sequence": 3,
+  "language_code": "en",
+  "voice_profile_id": "text_only",
+  "event": {
+    "type": "goal",
+    "minute": 61,
+    "team_id": "aurora-fc",
+    "team_name": "Aurora FC",
+    "player_name": "Nico Vale",
+    "score": {
+      "home": 2,
+      "away": 1
+    },
+    "text": "Nico Vale restores Aurora's lead."
+  },
+  "match_context": {
+    "league": "Demo Premier League",
+    "home_team": "Aurora FC",
+    "away_team": "Harbor United",
+    "status": "live"
+  }
+}
+```
+
+## Commentary Generation Response
+
+```json
+{
+  "request_id": "req-123",
+  "match_id": "match-aur-har",
+  "event_id": "evt-3",
+  "sequence": 3,
+  "language_code": "en",
+  "text": "Nico Vale pounces, Aurora leads 2-1, and the tempo jumps again.",
+  "audio": {
+    "status": "not_generated",
+    "url": null,
+    "duration_ms": null,
+    "waveform": []
+  },
+  "model_version": "commentary-v1",
+  "generated_at": "2026-08-04T20:15:00Z",
+  "safety": {
+    "passed": true,
+    "flags": []
+  }
+}
+```
+
+## Match Prediction Request
+
+```json
+{
+  "request_id": "req-456",
+  "match_id": "match-aur-har",
+  "market": "match_result",
+  "language_code": "en",
+  "match": {
+    "league": "Demo Premier League",
+    "home_team": "Aurora FC",
+    "away_team": "Harbor United",
+    "status": "live",
+    "minute": 64,
+    "score": {
+      "home": 2,
+      "away": 1
+    }
+  },
+  "timeline": [
+    {
+      "minute": 12,
+      "type": "goal",
+      "team_id": "aurora-fc"
+    }
+  ]
+}
+```
+
+## Match Prediction Response
+
+```json
+{
+  "request_id": "req-456",
+  "match_id": "match-aur-har",
+  "market": "match_result",
+  "probabilities": {
+    "home": 0.58,
+    "draw": 0.24,
+    "away": 0.18
+  },
+  "confidence": 0.64,
+  "insight_bullets": [
+    "Aurora is creating more shots on target.",
+    "Harbor remains dangerous on transitions."
+  ],
+  "model_version": "prediction-v1",
+  "generated_at": "2026-08-04T20:15:00Z"
+}
+```
+
+## Backend Expectations
+
+- AI services should use HTTPS in non-local environments.
+- AI services should return JSON only.
+- AI services should not require direct mobile/web access.
+- Backend will own retries, caching, persistence, and delivery.
+- Backend expects timeouts to be safe for a live UI, ideally under 2.5 seconds for text.
+- If AI service fails, backend will return seeded/mock fallback for MVP.
+
+## Open Questions For Antonio
+
+| Question | Needed Decision |
+| --- | --- |
+| Hosting | Will Antonio host the AI services, or should this backend deploy them? |
+| Auth | Shared API key, JWT, mTLS, or internal network only? |
+| Audio | Will commentary service return audio URL, audio bytes, or text only at MVP? |
+| Languages | Which languages are actually supported in MVP? |
+| Latency | Target p95 latency for commentary and predictions? |
+| Versioning | How should model/prompt versions be exposed? |
+| Fallback | Should backend fallback be deterministic templates or Antonio-provided fallback text? |
+

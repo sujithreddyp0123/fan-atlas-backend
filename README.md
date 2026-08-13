@@ -22,6 +22,8 @@ Zero-budget MVP backend for FanAtlas. This is a universal API intended to serve 
 - Feedback endpoint.
 - WebSocket live match channel.
 - Antonio AI commentary/prediction contract draft.
+- Standard error response shape and request IDs.
+- Dockerfile and GitHub Actions CI.
 - Health and version endpoints.
 - OpenAPI docs from FastAPI.
 
@@ -38,6 +40,18 @@ Open:
 - API health: `http://127.0.0.1:8000/health`
 - API docs: `http://127.0.0.1:8000/docs`
 - OpenAPI JSON: `http://127.0.0.1:8000/openapi.json`
+
+Export an OpenAPI file:
+
+```powershell
+.venv\Scripts\python.exe scripts\export_openapi.py
+```
+
+Run tests:
+
+```powershell
+.venv\Scripts\python.exe -m pytest tests
+```
 
 ## Demo Login
 
@@ -111,11 +125,29 @@ Server response:
 
 See `docs/antonio-ai-contract.md` for the AI layer compatibility contract.
 
+## Error Contract
+
+Handled errors return:
+
+```json
+{
+  "error": {
+    "code": "not_found",
+    "message": "Match not found",
+    "request_id": "req-abc123"
+  }
+}
+```
+
+Every HTTP response includes `X-Request-ID`.
+
+See `docs/frontend-api-contract.md` for frontend integration details.
+
 ## Next Build Steps
 
 1. Connect Figma screens to endpoint response needs.
 2. Finalize OpenAPI schemas with frontend.
 3. Replace selected seed data with a free football API adapter.
 4. Add persistent database storage.
-5. Add WebSocket live match channel.
-6. Wire Antonio's AI commentary and prediction API contracts when ready.
+5. Wire Antonio's AI commentary and prediction API contracts when ready.
+6. Add real WebSocket fan-out from sports data and AI events.

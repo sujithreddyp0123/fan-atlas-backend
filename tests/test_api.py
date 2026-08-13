@@ -15,9 +15,10 @@ def login() -> str:
 
 
 def test_health() -> None:
-    response = client.get("/health")
+    response = client.get("/health", headers={"X-Request-ID": "req-test-health"})
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
+    assert response.headers["X-Request-ID"] == "req-test-health"
 
 
 def test_login_and_me() -> None:
@@ -42,6 +43,8 @@ def test_prediction_submission_requires_auth() -> None:
         json={"match_id": "match-met-riv", "choice": "home"},
     )
     assert response.status_code == 401
+    assert response.json()["error"]["code"] == "unauthorized"
+    assert "X-Request-ID" in response.headers
 
 
 def test_prediction_submission_for_upcoming_match() -> None:
@@ -72,3 +75,20 @@ def test_match_websocket_snapshot_and_ping() -> None:
         pong = websocket.receive_json()
         assert pong["type"] == "pong"
         assert pong["payload"]["status"] == "ok"
+
+
+def test_missing_match_uses_standard_error_shape() -> None:
+    response = client.get("/api/v1/matches/missing-match")
+    assert response.status_code == 404
+    body = response.json()
+    assert body["error"]["code"] == "not_found"
+    assert body["error"]["message"] == "Match not found"
+    assert body["error"]["request_id"] == response.headers["X-Request-ID"]
+
+
+def test_openapi_export_shape() -> None:
+    response = client.get("/openapi.json")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["info"]["title"] == "FanAtlas Universal Backend"
+    assert "/api/v1/matches/{match_id}/center" in body["paths"]

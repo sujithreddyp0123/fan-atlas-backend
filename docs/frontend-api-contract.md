@@ -54,6 +54,8 @@ All handled API errors use the same shape:
 | Insights | `GET /api/v1/matches/{match_id}/insights` |
 | Profile | `GET /api/v1/me`, `PATCH /api/v1/me/profile` |
 | Feedback | `POST /api/v1/feedback` |
+| AI integration test | `POST /api/v1/ai/commentary/matches/{match_id}/events/{event_id}` |
+| AI integration test | `POST /api/v1/ai/predictions/matches/{match_id}` |
 
 ## Realtime Messages
 
@@ -78,6 +80,18 @@ Known MVP message types:
 | `pong` | Response to client ping |
 | `error` | Unsupported message or recoverable realtime error |
 
+## Commentary Status
+
+Commentary items may use:
+
+| Status | Client behavior |
+| --- | --- |
+| `available` | Show/play the commentary item |
+| `duplicate` | Do not show a new line; map UI state to the original event if needed |
+| `no_line` | Do not show commentary for this event |
+| `fallback` | Show safe fallback text |
+| `failed` | Hide from primary timeline and log if needed |
+
 ## OpenAPI
 
 Runtime OpenAPI JSON:
@@ -91,4 +105,3 @@ Export a checked-in contract locally:
 ```powershell
 .venv\Scripts\python.exe scripts\export_openapi.py
 ```
-

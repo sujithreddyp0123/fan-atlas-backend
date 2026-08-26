@@ -23,9 +23,12 @@ class AIMatchContext(BaseModel):
 
 class AICommentaryRequest(BaseModel):
     request_id: str
+    requested_at: str
     match_id: str
     event_id: str
+    source_event_id: str
     sequence: int
+    occurred_at: str | None = None
     language_code: str = "en"
     voice_profile_id: str = "text_only"
     event: AIEventPayload
@@ -48,7 +51,10 @@ class AICommentaryResponse(BaseModel):
     request_id: str
     match_id: str
     event_id: str
+    source_event_id: str
     sequence: int
+    status: str = "available"
+    duplicate_of_event_id: str | None = None
     language_code: str = "en"
     text: str
     audio: AIAudioPayload = Field(default_factory=AIAudioPayload)
@@ -70,10 +76,13 @@ class AIPredictionTimelineItem(BaseModel):
     minute: int | None = None
     type: str
     team_id: str | None = None
+    source_event_id: str | None = None
+    occurred_at: str | None = None
 
 
 class AIPredictionRequest(BaseModel):
     request_id: str
+    requested_at: str
     match_id: str
     market: str = "match_result"
     language_code: str = "en"
@@ -90,4 +99,3 @@ class AIPredictionResponse(BaseModel):
     insight_bullets: list[str]
     model_version: str
     generated_at: str
-

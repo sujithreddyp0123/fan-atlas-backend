@@ -33,6 +33,7 @@ def test_match_center() -> None:
     assert response.status_code == 200
     body = response.json()
     assert body["match"]["id"] == "match-aur-har"
+    assert body["match"]["timeline"][0]["source_event_id"] == "api-football-demo-1001"
     assert body["ai_prediction"]["market"] == "match_result"
     assert "commentary" in body
 
@@ -92,3 +93,23 @@ def test_openapi_export_shape() -> None:
     body = response.json()
     assert body["info"]["title"] == "FanAtlas Universal Backend"
     assert "/api/v1/matches/{match_id}/center" in body["paths"]
+
+
+def test_mock_ai_commentary_client_endpoint() -> None:
+    response = client.post("/api/v1/ai/commentary/matches/match-aur-har/events/evt-3")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["match_id"] == "match-aur-har"
+    assert body["event_id"] == "evt-3"
+    assert body["source_event_id"] == "api-football-demo-1003"
+    assert body["status"] == "available"
+    assert body["safety"]["passed"] is True
+
+
+def test_mock_ai_prediction_client_endpoint() -> None:
+    response = client.post("/api/v1/ai/predictions/matches/match-aur-har")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["match_id"] == "match-aur-har"
+    assert body["market"] == "match_result"
+    assert body["model_version"] == "mock-prediction-v1"

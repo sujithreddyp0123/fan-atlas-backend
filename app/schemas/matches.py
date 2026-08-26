@@ -49,8 +49,10 @@ class MatchStats(BaseModel):
 
 class TimelineEvent(BaseModel):
     id: str
+    source_event_id: str
     sequence: int
     minute: int
+    occurred_at: str | None = None
     type: str
     team_id: str | None = None
     player_name: str | None = None
@@ -62,6 +64,8 @@ class CommentaryItem(BaseModel):
     id: str
     sequence: int
     timeline_event_id: str
+    source_event_id: str
+    status: str = "available"
     text: str
     language_code: str = "en"
     audio_url: str | None = None
@@ -104,4 +108,3 @@ class MatchCenter(BaseModel):
     community_prediction: CommunityPrediction
     insights: InsightsResponse
     stream_status: str = "available"
-

@@ -11,6 +11,11 @@ class Settings(BaseSettings):
     api_v1_prefix: str = "/api/v1"
     jwt_secret: str = "change-me-in-local-dev"
     jwt_expires_minutes: int = 1440
+    ai_client_mode: str = "mock"
+    ai_commentary_url: str = ""
+    ai_prediction_url: str = ""
+    ai_api_key: str = ""
+    ai_timeout_seconds: float = 2.5
     cors_origins_raw: str = Field(
         default="http://localhost:3000,http://localhost:5173,exp://localhost:8081",
         alias="CORS_ORIGINS",
@@ -29,4 +34,3 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
-

@@ -22,6 +22,7 @@ Zero-budget MVP backend for FanAtlas. This is a universal API intended to serve 
 - Feedback endpoint.
 - WebSocket live match channel.
 - Antonio AI commentary/prediction contract draft.
+- Mock and HTTP AI clients for commentary/prediction integration.
 - Standard error response shape and request IDs.
 - Dockerfile and GitHub Actions CI.
 - Health and version endpoints.
@@ -72,6 +73,8 @@ Run tests:
 | Auth | `POST /api/v1/auth/login` |
 | Auth | `POST /api/v1/auth/refresh` |
 | Auth | `POST /api/v1/auth/logout` |
+| AI | `POST /api/v1/ai/commentary/matches/{match_id}/events/{event_id}` |
+| AI | `POST /api/v1/ai/predictions/matches/{match_id}` |
 | User | `GET /api/v1/me` |
 | User | `PATCH /api/v1/me/profile` |
 | Matches | `GET /api/v1/matches` |
@@ -142,6 +145,25 @@ Handled errors return:
 Every HTTP response includes `X-Request-ID`.
 
 See `docs/frontend-api-contract.md` for frontend integration details.
+
+## AI Client Mode
+
+Default mode is mock:
+
+```text
+AI_CLIENT_MODE=mock
+```
+
+To call Antonio's services later:
+
+```text
+AI_CLIENT_MODE=http
+AI_COMMENTARY_URL=https://example.ai/commentary
+AI_PREDICTION_URL=https://example.ai/predictions
+AI_API_KEY=replace-with-shared-secret
+```
+
+The backend keeps the AI layer server-side only; mobile and web clients do not call Antonio's AI services directly.
 
 ## Next Build Steps
 

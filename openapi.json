@@ -1,6 +1,194 @@
 {
   "components": {
     "schemas": {
+      "AIAudioPayload": {
+        "properties": {
+          "duration_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Ms"
+          },
+          "status": {
+            "default": "not_generated",
+            "title": "Status",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "waveform": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Waveform",
+            "type": "array"
+          }
+        },
+        "title": "AIAudioPayload",
+        "type": "object"
+      },
+      "AICommentaryResponse": {
+        "properties": {
+          "audio": {
+            "$ref": "#/components/schemas/AIAudioPayload"
+          },
+          "duplicate_of_event_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duplicate Of Event Id"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "string"
+          },
+          "generated_at": {
+            "title": "Generated At",
+            "type": "string"
+          },
+          "language_code": {
+            "default": "en",
+            "title": "Language Code",
+            "type": "string"
+          },
+          "match_id": {
+            "title": "Match Id",
+            "type": "string"
+          },
+          "model_version": {
+            "title": "Model Version",
+            "type": "string"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "safety": {
+            "$ref": "#/components/schemas/AISafetyPayload"
+          },
+          "sequence": {
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "source_event_id": {
+            "title": "Source Event Id",
+            "type": "string"
+          },
+          "status": {
+            "default": "available",
+            "title": "Status",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id",
+          "match_id",
+          "event_id",
+          "source_event_id",
+          "sequence",
+          "text",
+          "model_version",
+          "generated_at",
+          "safety"
+        ],
+        "title": "AICommentaryResponse",
+        "type": "object"
+      },
+      "AIPredictionResponse": {
+        "properties": {
+          "confidence": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "generated_at": {
+            "title": "Generated At",
+            "type": "string"
+          },
+          "insight_bullets": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Insight Bullets",
+            "type": "array"
+          },
+          "market": {
+            "default": "match_result",
+            "title": "Market",
+            "type": "string"
+          },
+          "match_id": {
+            "title": "Match Id",
+            "type": "string"
+          },
+          "model_version": {
+            "title": "Model Version",
+            "type": "string"
+          },
+          "probabilities": {
+            "$ref": "#/components/schemas/ProbabilityBreakdown"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id",
+          "match_id",
+          "probabilities",
+          "confidence",
+          "insight_bullets",
+          "model_version",
+          "generated_at"
+        ],
+        "title": "AIPredictionResponse",
+        "type": "object"
+      },
+      "AISafetyPayload": {
+        "properties": {
+          "flags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Flags",
+            "type": "array"
+          },
+          "passed": {
+            "title": "Passed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "passed"
+        ],
+        "title": "AISafetyPayload",
+        "type": "object"
+      },
       "AuthResponse": {
         "properties": {
           "access_token": {
@@ -65,6 +253,10 @@
             "title": "Sequence",
             "type": "integer"
           },
+          "source_event_id": {
+            "title": "Source Event Id",
+            "type": "string"
+          },
           "starts_at_ms": {
             "anyOf": [
               {
@@ -75,6 +267,11 @@
               }
             ],
             "title": "Starts At Ms"
+          },
+          "status": {
+            "default": "available",
+            "title": "Status",
+            "type": "string"
           },
           "text": {
             "title": "Text",
@@ -89,6 +286,7 @@
           "id",
           "sequence",
           "timeline_event_id",
+          "source_event_id",
           "text"
         ],
         "title": "CommentaryItem",
@@ -895,6 +1093,17 @@
             "title": "Minute",
             "type": "integer"
           },
+          "occurred_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occurred At"
+          },
           "player_name": {
             "anyOf": [
               {
@@ -912,6 +1121,10 @@
           "sequence": {
             "title": "Sequence",
             "type": "integer"
+          },
+          "source_event_id": {
+            "title": "Source Event Id",
+            "type": "string"
           },
           "team_id": {
             "anyOf": [
@@ -935,6 +1148,7 @@
         },
         "required": [
           "id",
+          "source_event_id",
           "sequence",
           "minute",
           "type",
@@ -1114,6 +1328,99 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/ai/commentary/matches/{match_id}/events/{event_id}": {
+      "post": {
+        "operationId": "generate_commentary_api_v1_ai_commentary_matches__match_id__events__event_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "event_id",
+            "required": true,
+            "schema": {
+              "title": "Event Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AICommentaryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate Commentary",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
+    "/api/v1/ai/predictions/matches/{match_id}": {
+      "post": {
+        "operationId": "generate_prediction_api_v1_ai_predictions_matches__match_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "match_id",
+            "required": true,
+            "schema": {
+              "title": "Match Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIPredictionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate Prediction",
+        "tags": [
+          "ai"
+        ]
+      }
+    },
     "/api/v1/auth/login": {
       "post": {
         "operationId": "login_api_v1_auth_login_post",

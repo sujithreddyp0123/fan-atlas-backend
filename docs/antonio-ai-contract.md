@@ -22,7 +22,9 @@ Backend sends one validated match event at a time.
   "request_id": "req-123",
   "match_id": "match-aur-har",
   "event_id": "evt-3",
+  "source_event_id": "api-football-demo-1003",
   "sequence": 3,
+  "occurred_at": "2026-08-04T21:21:00Z",
   "language_code": "en",
   "voice_profile_id": "text_only",
   "event": {
@@ -53,7 +55,10 @@ Backend sends one validated match event at a time.
   "request_id": "req-123",
   "match_id": "match-aur-har",
   "event_id": "evt-3",
+  "source_event_id": "api-football-demo-1003",
   "sequence": 3,
+  "status": "available",
+  "duplicate_of_event_id": null,
   "language_code": "en",
   "text": "Nico Vale pounces, Aurora leads 2-1, and the tempo jumps again.",
   "audio": {
@@ -131,6 +136,22 @@ Backend sends one validated match event at a time.
 - Backend expects timeouts to be safe for a live UI, ideally under 2.5 seconds for text.
 - If AI service fails, backend will return seeded/mock fallback for MVP.
 
+## Duplicate And No-Line Cases
+
+Commentary responses use `status` to represent non-standard outcomes.
+
+| Status | Meaning |
+| --- | --- |
+| `available` | Commentary text is ready and can be shown/played |
+| `duplicate` | Event is a duplicate and should map to `duplicate_of_event_id` |
+| `no_line` | Valid event, but no commentary line should be shown |
+| `fallback` | Backend or AI fallback generated a safe line |
+| `failed` | AI could not produce a usable line |
+
+`source_event_id` should remain stable for the provider event. Backend will use it as the dedupe key when available.
+
+`occurred_at` should represent the actual event timestamp from provider/live data. If the provider does not supply an absolute timestamp, backend may send `null` and rely on `minute` plus `sequence`.
+
 ## Open Questions For Antonio
 
 | Question | Needed Decision |
@@ -142,4 +163,3 @@ Backend sends one validated match event at a time.
 | Latency | Target p95 latency for commentary and predictions? |
 | Versioning | How should model/prompt versions be exposed? |
 | Fallback | Should backend fallback be deterministic templates or Antonio-provided fallback text? |
-

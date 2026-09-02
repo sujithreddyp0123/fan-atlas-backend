@@ -70,6 +70,7 @@ class InMemoryStore:
 
         self.matches["match-aur-har"] = MatchDetail(
             id="match-aur-har",
+            league_id="demo-premier-league",
             league="Demo Premier League",
             kickoff_at="2026-08-04T20:00:00Z",
             status=MatchStatus.live,
@@ -127,6 +128,7 @@ class InMemoryStore:
         )
         self.matches["match-met-riv"] = MatchDetail(
             id="match-met-riv",
+            league_id="demo-premier-league",
             league="Demo Premier League",
             kickoff_at="2026-08-05T18:30:00Z",
             status=MatchStatus.upcoming,

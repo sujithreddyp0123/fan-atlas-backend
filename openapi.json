@@ -630,6 +630,10 @@
             "title": "League",
             "type": "string"
           },
+          "league_id": {
+            "title": "League Id",
+            "type": "string"
+          },
           "minute": {
             "anyOf": [
               {
@@ -671,6 +675,7 @@
         },
         "required": [
           "id",
+          "league_id",
           "league",
           "kickoff_at",
           "status",
@@ -819,6 +824,10 @@
             "title": "League",
             "type": "string"
           },
+          "league_id": {
+            "title": "League Id",
+            "type": "string"
+          },
           "minute": {
             "anyOf": [
               {
@@ -850,6 +859,7 @@
         },
         "required": [
           "id",
+          "league_id",
           "league",
           "kickoff_at",
           "status",

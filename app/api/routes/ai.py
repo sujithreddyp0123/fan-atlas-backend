@@ -21,9 +21,8 @@ def generate_commentary(match_id: str, event_id: str) -> AICommentaryResponse:
 @router.post("/predictions/matches/{match_id}", response_model=AIPredictionResponse)
 def generate_prediction(match_id: str) -> AIPredictionResponse:
     try:
-        return AIGateway(get_store()).predict_match(match_id)
+        return AIGateway(get_store()).get_pre_match_prediction(match_id)
     except KeyError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc).strip("'")) from exc
     except AIClientError as exc:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
-

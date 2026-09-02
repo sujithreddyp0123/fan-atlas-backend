@@ -6,9 +6,7 @@ from app.schemas.ai import (
     AICommentaryRequest,
     AIEventPayload,
     AIMatchContext,
-    AIPredictionMatchPayload,
-    AIPredictionRequest,
-    AIPredictionTimelineItem,
+    AIPreMatchPredictionLookupRequest,
 )
 from app.services.ai_client import AIClient, get_ai_client
 
@@ -53,40 +51,31 @@ class AIGateway:
                 text=event.text,
             ),
             match_context=AIMatchContext(
+                league_id=match.league_id,
                 league=match.league,
+                home_team_id=match.home_team.id,
                 home_team=match.home_team.name,
+                away_team_id=match.away_team.id,
                 away_team=match.away_team.name,
                 status=match.status.value,
             ),
         )
         return self.client.generate_commentary(request)
 
-    def predict_match(self, match_id: str):
+    def get_pre_match_prediction(self, match_id: str):
         match = self.store.get_match_detail(match_id)
         if not match:
             raise KeyError("Match not found")
-        request = AIPredictionRequest(
+        request = AIPreMatchPredictionLookupRequest(
             request_id="ai-pred-" + uuid4().hex[:12],
             requested_at=utc_now_iso(),
             match_id=match.id,
-            match=AIPredictionMatchPayload(
-                league=match.league,
-                home_team=match.home_team.name,
-                away_team=match.away_team.name,
-                status=match.status.value,
-                minute=match.minute,
-                score=match.score,
-            ),
-            timeline=[
-                AIPredictionTimelineItem(
-                    minute=event.minute,
-                    type=event.type,
-                    team_id=event.team_id,
-                    source_event_id=event.source_event_id,
-                    occurred_at=event.occurred_at,
-                )
-                for event in match.timeline
-            ],
+            league_id=match.league_id,
+            league=match.league,
+            home_team_id=match.home_team.id,
+            home_team=match.home_team.name,
+            away_team_id=match.away_team.id,
+            away_team=match.away_team.name,
+            kickoff_at=match.kickoff_at,
         )
-        return self.client.predict_match(request)
-
+        return self.client.get_pre_match_prediction(request)

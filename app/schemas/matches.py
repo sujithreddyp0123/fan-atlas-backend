@@ -28,6 +28,7 @@ class ScoreState(BaseModel):
 
 class MatchSummary(BaseModel):
     id: str
+    league_id: str
     league: str
     kickoff_at: str
     status: MatchStatus

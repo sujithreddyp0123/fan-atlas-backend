@@ -15,8 +15,11 @@ class AIEventPayload(BaseModel):
 
 
 class AIMatchContext(BaseModel):
+    league_id: str
     league: str
+    home_team_id: str
     home_team: str
+    away_team_id: str
     away_team: str
     status: str
 
@@ -63,31 +66,19 @@ class AICommentaryResponse(BaseModel):
     safety: AISafetyPayload
 
 
-class AIPredictionMatchPayload(BaseModel):
-    league: str
-    home_team: str
-    away_team: str
-    status: str
-    minute: int | None = None
-    score: ScoreState
-
-
-class AIPredictionTimelineItem(BaseModel):
-    minute: int | None = None
-    type: str
-    team_id: str | None = None
-    source_event_id: str | None = None
-    occurred_at: str | None = None
-
-
-class AIPredictionRequest(BaseModel):
+class AIPreMatchPredictionLookupRequest(BaseModel):
     request_id: str
     requested_at: str
     match_id: str
     market: str = "match_result"
     language_code: str = "en"
-    match: AIPredictionMatchPayload
-    timeline: list[AIPredictionTimelineItem] = Field(default_factory=list)
+    league_id: str
+    league: str
+    home_team_id: str
+    home_team: str
+    away_team_id: str
+    away_team: str
+    kickoff_at: str
 
 
 class AIPredictionResponse(BaseModel):

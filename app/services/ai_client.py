@@ -7,7 +7,7 @@ from app.schemas.ai import (
     AIAudioPayload,
     AICommentaryRequest,
     AICommentaryResponse,
-    AIPredictionRequest,
+    AIPreMatchPredictionLookupRequest,
     AIPredictionResponse,
     AISafetyPayload,
 )
@@ -22,7 +22,7 @@ class AIClient(Protocol):
     def generate_commentary(self, payload: AICommentaryRequest) -> AICommentaryResponse:
         raise NotImplementedError
 
-    def predict_match(self, payload: AIPredictionRequest) -> AIPredictionResponse:
+    def get_pre_match_prediction(self, payload: AIPreMatchPredictionLookupRequest) -> AIPredictionResponse:
         raise NotImplementedError
 
 
@@ -53,12 +53,9 @@ class MockAIClient:
             safety=AISafetyPayload(passed=True),
         )
 
-    def predict_match(self, payload: AIPredictionRequest) -> AIPredictionResponse:
-        score = payload.match.score
-        if score.home > score.away:
-            probabilities = ProbabilityBreakdown(home=0.58, draw=0.24, away=0.18)
-        elif score.away > score.home:
-            probabilities = ProbabilityBreakdown(home=0.22, draw=0.25, away=0.53)
+    def get_pre_match_prediction(self, payload: AIPreMatchPredictionLookupRequest) -> AIPredictionResponse:
+        if payload.home_team_id == "aurora-fc":
+            probabilities = ProbabilityBreakdown(home=0.56, draw=0.25, away=0.19)
         else:
             probabilities = ProbabilityBreakdown(home=0.41, draw=0.31, away=0.28)
         return AIPredictionResponse(
@@ -67,7 +64,7 @@ class MockAIClient:
             probabilities=probabilities,
             confidence=0.62,
             insight_bullets=[
-                "Mock prediction generated from current match state.",
+                "Mock pre-match prediction generated from seeded team context.",
                 "Replace this client with Antonio's AI endpoint when ready.",
             ],
             model_version="mock-prediction-v1",
@@ -111,7 +108,7 @@ class HttpAIClient:
         except (httpx.HTTPError, ValueError) as exc:
             raise AIClientError(f"AI commentary request failed: {type(exc).__name__}") from exc
 
-    def predict_match(self, payload: AIPredictionRequest) -> AIPredictionResponse:
+    def get_pre_match_prediction(self, payload: AIPreMatchPredictionLookupRequest) -> AIPredictionResponse:
         if not self.prediction_url:
             raise AIClientError("AI prediction URL is not configured")
         try:
@@ -136,4 +133,3 @@ def get_ai_client() -> AIClient:
             timeout_seconds=settings.ai_timeout_seconds,
         )
     return MockAIClient()
-

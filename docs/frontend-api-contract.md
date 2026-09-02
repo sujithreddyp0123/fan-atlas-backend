@@ -55,7 +55,7 @@ All handled API errors use the same shape:
 | Profile | `GET /api/v1/me`, `PATCH /api/v1/me/profile` |
 | Feedback | `POST /api/v1/feedback` |
 | AI integration test | `POST /api/v1/ai/commentary/matches/{match_id}/events/{event_id}` |
-| AI integration test | `POST /api/v1/ai/predictions/matches/{match_id}` |
+| AI integration test | `POST /api/v1/ai/predictions/matches/{match_id}` pre-match prediction lookup |
 
 ## Realtime Messages
 

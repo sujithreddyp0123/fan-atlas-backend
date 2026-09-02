@@ -40,8 +40,11 @@ Backend sends one validated match event at a time.
     "text": "Nico Vale restores Aurora's lead."
   },
   "match_context": {
+    "league_id": "demo-premier-league",
     "league": "Demo Premier League",
+    "home_team_id": "aurora-fc",
     "home_team": "Aurora FC",
+    "away_team_id": "harbor-united",
     "away_team": "Harbor United",
     "status": "live"
   }
@@ -76,32 +79,26 @@ Backend sends one validated match event at a time.
 }
 ```
 
-## Match Prediction Request
+## Pre-Match Prediction Lookup Request
+
+The backend does not ask the Prediction Engine to recalculate from live match
+state. It looks up or requests the pre-calculated prediction created before
+kickoff.
 
 ```json
 {
   "request_id": "req-456",
+  "requested_at": "2026-08-04T18:00:00Z",
   "match_id": "match-aur-har",
   "market": "match_result",
   "language_code": "en",
-  "match": {
-    "league": "Demo Premier League",
-    "home_team": "Aurora FC",
-    "away_team": "Harbor United",
-    "status": "live",
-    "minute": 64,
-    "score": {
-      "home": 2,
-      "away": 1
-    }
-  },
-  "timeline": [
-    {
-      "minute": 12,
-      "type": "goal",
-      "team_id": "aurora-fc"
-    }
-  ]
+  "league_id": "demo-premier-league",
+  "league": "Demo Premier League",
+  "home_team_id": "aurora-fc",
+  "home_team": "Aurora FC",
+  "away_team_id": "harbor-united",
+  "away_team": "Harbor United",
+  "kickoff_at": "2026-08-04T20:00:00Z"
 }
 ```
 
@@ -135,6 +132,8 @@ Backend sends one validated match event at a time.
 - Backend will own retries, caching, persistence, and delivery.
 - Backend expects timeouts to be safe for a live UI, ideally under 2.5 seconds for text.
 - If AI service fails, backend will return seeded/mock fallback for MVP.
+- Prediction lookup should use the pre-match prediction keyed by `match_id`
+  and stable league/team identifiers, not live score, minute, or timeline.
 
 ## Duplicate And No-Line Cases
 

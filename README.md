@@ -165,6 +165,11 @@ AI_API_KEY=replace-with-shared-secret
 
 The backend keeps the AI layer server-side only; mobile and web clients do not call Antonio's AI services directly.
 
+Commentary requests include `league_id`, `home_team_id`, `away_team_id`,
+`source_event_id`, and `occurred_at`. Prediction integration uses a pre-match
+lookup payload keyed by stable match, league, and team IDs instead of sending
+live score, minute, or timeline data.
+
 ## Next Build Steps
 
 1. Connect Figma screens to endpoint response needs.
